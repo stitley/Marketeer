@@ -1,6 +1,9 @@
 $(document).ready(function(){
 	console.log('Configuring Marketeer');
+	marketeer = new Marketeer('Domain');
 });
+
+var mareteer;
 
 function Marketeer(region) {
 	this.selectedRegion;
@@ -13,25 +16,33 @@ function Marketeer(region) {
 	return this;
 }
 
-function Marketeer.Regions = function(controller){
+Marketeer.Regions = function(controller){
 	this.controller = controller;
+	this.region = this.getAll();
 	return this;
 }
 
-function Marketeer.Regions.Region = function(regionObject){
-	this.id = regionObject.Id;
-	this.name = regionObject.Name;
+Marketeer.Regions.Region = function(region){
+	this.id = region.region_id;
+	this.name = region.name;
 	return this;
 }
 
-Mareketeer.Regions.prototype.getAll = function(){
-	var regionData = this.controller.callAPI("/universe/regions/");
-	regionData.forEach(new Marketeer.Regions.Region);
+Marketeer.Regions.prototype.getAll = function(){
+	var controller = this.controller;
+	var regionData = this.controller.callAPI("/universe/regions");
+	var region = [];
+	regionData.forEach(function(regionId){
+		var regionObject = controller.callAPI("/universe/regions/"+regionId);
+		var regionOb = new Marketeer.Regions.Region(regionObject);
+		region.push(regionOb);
+	});
+	return region;
 }
 
 Marketeer.prototype.callAPI = function(serviceUrl){
 	var xmlHttp = new XMLHttpRequest();
-    xmlHttp.open( "GET", "https://esi.tech.ccp.is/latest"+serviceUrl+"?datasource=tranquility", false ); // false for synchronous request
+    xmlHttp.open( "GET", "https://esi.tech.ccp.is/latest"+serviceUrl+"/?datasource=tranquility", false ); // false for synchronous request
     xmlHttp.send();
     return JSON.parse(xmlHttp.responseText);
 }
