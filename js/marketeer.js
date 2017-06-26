@@ -3,7 +3,7 @@ $(document).ready(function(){
 	marketeer = new Marketeer('Domain');
 });
 
-var mareteer;
+var marketeer;
 
 function Marketeer(region) {
 	this.selectedRegion;
@@ -18,7 +18,7 @@ function Marketeer(region) {
 
 Marketeer.Regions = function(controller){
 	this.controller = controller;
-	this.region = this.getAll();
+	this.regionList = this.getAll();
 	return this;
 }
 
@@ -31,13 +31,13 @@ Marketeer.Regions.Region = function(region){
 Marketeer.Regions.prototype.getAll = function(){
 	var controller = this.controller;
 	var regionData = this.controller.callAPI("/universe/regions");
-	var region = [];
+	var regions = [];
 	regionData.forEach(function(regionId){
 		var regionObject = controller.callAPI("/universe/regions/"+regionId);
 		var regionOb = new Marketeer.Regions.Region(regionObject);
-		region.push(regionOb);
+		regions.push(regionOb);
 	});
-	return region;
+	return regions;
 }
 
 Marketeer.prototype.callAPI = function(serviceUrl){
